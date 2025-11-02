@@ -158,10 +158,13 @@
                 dropZone.dataset.index = index;
                 dropZone.textContent = ''; // Empty initially
 
-                // Translation text on the right
+                // Translation text on the right (remove "Yang" prefix)
                 const translationText = document.createElement('div');
                 translationText.className = 'translation-text';
-                translationText.textContent = question.malay;
+                const malayText = question.malay.startsWith('Yang ') 
+                    ? question.malay.substring(5) 
+                    : question.malay;
+                translationText.textContent = malayText;
 
                 // Drop zone events
                 dropZone.addEventListener('dragover', handleDragOver);
