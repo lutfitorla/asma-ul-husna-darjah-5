@@ -1,0 +1,22 @@
+/*
+  MAIN STYLESHEET
+  ===============
+  
+  This file will contain all CSS styling for both index.html and quiz.html.
+  
+  Planned sections:
+  - Reset/Normalize styles
+  - Base typography (child-friendly fonts, large sizes)
+  - Layout styles (flexbox/grid)
+  - Color scheme (bright, friendly colors)
+  - Component styles (buttons, cards, quiz elements)
+  - Responsive design (mobile-friendly)
+  - Animations and transitions
+  
+  Design principles:
+  - Minimum font size: 16px for body text
+  - Large buttons (at least 44x44px for touch targets)
+  - High contrast for readability
+  - Friendly, engaging color palette
+*/
+
