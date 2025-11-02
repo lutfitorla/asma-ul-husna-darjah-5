@@ -79,6 +79,7 @@
         function startNewRound() {
             currentRound++;
             userAnswers = {};
+            dropZoneAnswerData.clear(); // Clear stored answer data
             currentQuestions = getRandomQuestions();
 
             // Shuffle Arabic names but keep them paired with their translations
@@ -129,6 +130,7 @@
 
                 // Touch events for mobile
                 arabicBtn.addEventListener('touchstart', handleTouchStart);
+                arabicBtn.addEventListener('touchcancel', handleTouchCancel);
 
                 arabicContainer.appendChild(arabicBtn);
             });
@@ -172,6 +174,40 @@
                 dropZone.addEventListener('drop', handleDrop);
                 dropZone.addEventListener('touchmove', handleTouchMove);
                 dropZone.addEventListener('touchend', handleTouchEnd);
+                
+                // Click/touch handler for undo functionality
+                dropZone.addEventListener('click', handleDropZoneClick);
+                
+                // Track touch for undo on filled zones
+                let touchStartPosForUndo = null;
+                dropZone.addEventListener('touchstart', (e) => {
+                    if (dropZone.classList.contains('filled') && !touchElement && !draggedElement) {
+                        touchStartPosForUndo = {
+                            x: e.touches[0].clientX,
+                            y: e.touches[0].clientY,
+                            time: Date.now()
+                        };
+                    }
+                }, {passive: true});
+                
+                dropZone.addEventListener('touchend', (e) => {
+                    if (dropZone.classList.contains('filled') && 
+                        !touchElement && 
+                        !draggedElement && 
+                        touchStartPosForUndo) {
+                        const touch = e.changedTouches[0];
+                        const deltaX = Math.abs(touch.clientX - touchStartPosForUndo.x);
+                        const deltaY = Math.abs(touch.clientY - touchStartPosForUndo.y);
+                        const deltaTime = Date.now() - touchStartPosForUndo.time;
+                        
+                        // Only undo if it was a tap (minimal movement, quick tap)
+                        if (deltaX < 10 && deltaY < 10 && deltaTime < 300) {
+                            e.preventDefault();
+                            performUndo(dropZone);
+                        }
+                        touchStartPosForUndo = null;
+                    }
+                }, {passive: false});
 
                 translationItem.appendChild(dropZone);
                 translationItem.appendChild(translationText);
@@ -193,6 +229,9 @@
         let draggedElement = null;
         let touchElement = null;
         let touchStartPos = {};
+        
+        // Store references to drop zones and their answer element data
+        let dropZoneAnswerData = new Map();
 
         function handleDragStart(e) {
             draggedElement = e.target;
@@ -216,6 +255,57 @@
             e.target.classList.remove('drag-over');
         }
 
+        // Helper function to restore an answer element to the grid
+        function restoreAnswerToGrid(answerData) {
+            const arabicContainer = document.querySelector('.arabic-names-grid');
+            if (!arabicContainer) return;
+
+            const arabicBtn = document.createElement('div');
+            arabicBtn.className = 'arabic-button';
+            arabicBtn.textContent = answerData.arabic;
+            arabicBtn.draggable = true;
+            arabicBtn.dataset.questionId = answerData.questionId;
+            arabicBtn.dataset.arabic = answerData.arabic;
+            arabicBtn.dataset.correctMeaning = answerData.correctMeaning;
+            arabicBtn.dataset.index = answerData.index;
+
+            // Apply the original style (golden or silver)
+            if (answerData.index < 5) {
+                arabicBtn.classList.add('golden');
+            } else {
+                arabicBtn.classList.add('silver');
+            }
+
+            // Reattach event listeners
+            arabicBtn.addEventListener('dragstart', handleDragStart);
+            arabicBtn.addEventListener('dragend', handleDragEnd);
+            arabicBtn.addEventListener('touchstart', handleTouchStart);
+            arabicBtn.addEventListener('touchcancel', handleTouchCancel);
+
+            // Add to grid (append to end)
+            arabicContainer.appendChild(arabicBtn);
+        }
+
+        // Helper function to store answer data in drop zone
+        function storeAnswerInDropZone(dropZone, answerElement) {
+            const answerData = {
+                questionId: answerElement.dataset.questionId,
+                arabic: answerElement.dataset.arabic,
+                correctMeaning: answerElement.dataset.correctMeaning,
+                index: answerElement.dataset.index
+            };
+            dropZoneAnswerData.set(dropZone, answerData);
+        }
+
+        // Helper function to return old answer from drop zone
+        function returnOldAnswerFromDropZone(dropZone) {
+            if (dropZone.classList.contains('filled') && dropZoneAnswerData.has(dropZone)) {
+                const answerData = dropZoneAnswerData.get(dropZone);
+                restoreAnswerToGrid(answerData);
+                dropZoneAnswerData.delete(dropZone);
+            }
+        }
+
         function handleDrop(e) {
             e.preventDefault();
             e.target.classList.remove('drag-over');
@@ -225,16 +315,26 @@
             const dropZoneQuestionId = e.target.dataset.questionId;
 
             if (e.target.classList.contains('drop-zone')) {
+                const dropZone = e.target;
+                
+                // If drop zone is already filled, return the old answer first
+                if (dropZone.classList.contains('filled')) {
+                    returnOldAnswerFromDropZone(dropZone);
+                    // Remove old user answer
+                    delete userAnswers[dropZoneQuestionId];
+                }
+
                 // Display the transliteration or Arabic name in the drop zone
                 const draggedBtn = draggedElement;
                 const displayText = draggedBtn.textContent;
-                e.target.textContent = displayText;
-                e.target.classList.add('filled');
-                e.target.dataset.droppedArabic = draggedArabic;
+                dropZone.textContent = displayText;
+                dropZone.classList.add('filled');
+                dropZone.dataset.droppedArabic = draggedArabic;
                 userAnswers[dropZoneQuestionId] = draggedQuestionId;
 
-                // Remove the dragged element
+                // Store the answer data before removing the element
                 if (draggedElement) {
+                    storeAnswerInDropZone(dropZone, draggedElement);
                     draggedElement.remove();
                     draggedElement = null;
                 }
@@ -243,8 +343,58 @@
             }
         }
 
+        // Handle click on drop zone to undo (mouse click)
+        function handleDropZoneClick(e) {
+            const dropZone = e.target;
+            
+            // Only handle if drop zone is filled
+            if (!dropZone.classList.contains('drop-zone') || !dropZone.classList.contains('filled')) {
+                return;
+            }
+            
+            // Don't trigger if user is trying to drag/drop something
+            if (touchElement || draggedElement) {
+                return;
+            }
+            
+            // For mouse clicks, perform undo immediately
+            performUndo(dropZone);
+        }
+        
+        function performUndo(dropZone) {
+            // Return the answer to available choices
+            returnOldAnswerFromDropZone(dropZone);
+            
+            // Clear the drop zone
+            dropZone.textContent = '';
+            dropZone.classList.remove('filled');
+            dropZone.classList.remove('drag-over');
+            delete dropZone.dataset.droppedArabic;
+            
+            // Remove from user answers
+            const questionId = dropZone.dataset.questionId;
+            delete userAnswers[questionId];
+            
+            checkIfAllAnswered();
+        }
+
         // Touch handlers for mobile
         function handleTouchStart(e) {
+            // If there's already a touch in progress, reset it first
+            if (touchElement && touchElement !== e.target) {
+                // Reset previous touch element
+                touchElement.style.position = '';
+                touchElement.style.zIndex = '';
+                touchElement.style.left = '';
+                touchElement.style.top = '';
+                touchElement.classList.remove('dragging');
+            }
+
+            // Only allow dragging answer boxes, not drop zones
+            if (!e.target.classList.contains('arabic-button')) {
+                return;
+            }
+
             touchElement = e.target;
             touchElement.classList.add('dragging');
 
@@ -261,6 +411,8 @@
             touchElement.style.zIndex = '1000';
             touchElement.style.left = touch.clientX - 50 + 'px';
             touchElement.style.top = touch.clientY - 25 + 'px';
+            
+            e.preventDefault(); // Prevent default touch behavior
         }
 
         function handleTouchMove(e) {
@@ -271,7 +423,7 @@
             touchElement.style.left = touch.clientX - 50 + 'px';
             touchElement.style.top = touch.clientY - 25 + 'px';
 
-            // Highlight drop zone
+            // Highlight drop zone (can highlight filled zones too for replacement)
             const dropZones = document.querySelectorAll('.drop-zone');
             dropZones.forEach(zone => {
                 const rect = zone.getBoundingClientRect();
@@ -284,6 +436,25 @@
             });
         }
 
+        function handleTouchCancel(e) {
+            // Reset touch element if touch is cancelled
+            if (touchElement) {
+                touchElement.style.position = '';
+                touchElement.style.zIndex = '';
+                touchElement.style.left = '';
+                touchElement.style.top = '';
+                touchElement.classList.remove('dragging');
+                
+                // Clean up drag-over classes
+                const dropZones = document.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    zone.classList.remove('drag-over');
+                });
+                
+                touchElement = null;
+            }
+        }
+
         function handleTouchEnd(e) {
             if (!touchElement) return;
 
@@ -291,7 +462,9 @@
             const dropZones = document.querySelectorAll('.drop-zone');
 
             let dropped = false;
-            dropZones.forEach(zone => {
+            
+            // Find the drop zone under the touch point
+            for (const zone of dropZones) {
                 const rect = zone.getBoundingClientRect();
                 if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
                     touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
@@ -301,16 +474,29 @@
                     const displayText = touchElement.textContent;
                     const questionId = zone.dataset.questionId;
 
-                    zone.textContent = displayText;
-                    zone.classList.add('filled');
-                    zone.classList.remove('drag-over');
-                    zone.dataset.droppedArabic = draggedArabic;
-                    userAnswers[questionId] = draggedQuestionId;
+                    // Only drop if we haven't already dropped this element
+                    if (!dropped) {
+                        // If drop zone is already filled, return the old answer first
+                        if (zone.classList.contains('filled')) {
+                            returnOldAnswerFromDropZone(zone);
+                            // Remove old user answer
+                            delete userAnswers[questionId];
+                        }
 
-                    touchElement.remove();
-                    dropped = true;
+                        zone.textContent = displayText;
+                        zone.classList.add('filled');
+                        zone.classList.remove('drag-over');
+                        zone.dataset.droppedArabic = draggedArabic;
+                        userAnswers[questionId] = draggedQuestionId;
+
+                        // Store the answer data before removing the element
+                        storeAnswerInDropZone(zone, touchElement);
+                        touchElement.remove();
+                        dropped = true;
+                    }
+                    break; // Exit loop once we've found and handled the drop zone
                 }
-            });
+            }
 
             if (!dropped && touchElement) {
                 // Reset position
@@ -320,6 +506,11 @@
                 touchElement.style.top = '';
                 touchElement.classList.remove('dragging');
             }
+
+            // Clean up: remove drag-over class from all zones
+            dropZones.forEach(zone => {
+                zone.classList.remove('drag-over');
+            });
 
             touchElement = null;
             checkIfAllAnswered();
