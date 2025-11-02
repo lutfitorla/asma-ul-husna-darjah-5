@@ -16,7 +16,7 @@
       "id": 3,
       "arabic": "الْمَلِكُ",
       "transliteration": "Al-Malik",
-      "malay": "Yang Maha Merajai"
+      "malay": "Menguasai/Raja Agong"
     },
     {
       "id": 4,
@@ -40,7 +40,7 @@
       "id": 7,
       "arabic": "الْمُهَيْمِنُ",
       "transliteration": "Al-Muhaymin",
-      "malay": "Yang Maha Pengawas"
+      "malay": "Yang Maha Mengawal/Mengawasi"
     },
     {
       "id": 8,
@@ -52,13 +52,13 @@
       "id": 9,
       "arabic": "الْجَبَّارُ",
       "transliteration": "Al-Jabbar",
-      "malay": "Yang Maha Memaksa"
+      "malay": "Yang Maha Kuat/Menundukkan"
     },
     {
       "id": 10,
       "arabic": "الْمُتَكَبِّرُ",
       "transliteration": "Al-Mutakabbir",
-      "malay": "Yang Maha Megah"
+      "malay": "Yang Maha Melengkap Segala Kebesaran"
     },
     {
       "id": 11,
@@ -70,7 +70,7 @@
       "id": 12,
       "arabic": "الْبَارِئُ",
       "transliteration": "Al-Bari",
-      "malay": "Yang Maha Membuat"
+      "malay": "Yang Maha Menjadikan"
     },
     {
       "id": 13,
@@ -88,7 +88,7 @@
       "id": 15,
       "arabic": "الْقَهَّارُ",
       "transliteration": "Al-Qahhar",
-      "malay": "Yang Maha Menundukkan"
+      "malay": "Yang Maha Pemaksa"
     },
     {
       "id": 16,
@@ -130,13 +130,13 @@
       "id": 22,
       "arabic": "الْخَافِضُ",
       "transliteration": "Al-Khafid",
-      "malay": "Yang Maha Merendahkan"
+      "malay": "Yang Maha Menurunkan Darjat"
     },
     {
       "id": 23,
       "arabic": "الرَّافِعُ",
       "transliteration": "Ar-Rafi",
-      "malay": "Yang Maha Meninggikan"
+      "malay": "Yang Maha Mengangkat Darjat"
     },
     {
       "id": 24,
@@ -166,7 +166,7 @@
       "id": 28,
       "arabic": "الْحَكَمُ",
       "transliteration": "Al-Hakam",
-      "malay": "Yang Maha Hakim"
+      "malay": "Yang Maha Menghukum"
     },
     {
       "id": 29,
@@ -178,7 +178,7 @@
       "id": 30,
       "arabic": "اللَّطِيفُ",
       "transliteration": "Al-Latif",
-      "malay": "Yang Maha Halus"
+      "malay": "Yang Maha Menghalusi"
     },
     {
       "id": 31,
@@ -208,7 +208,7 @@
       "id": 35,
       "arabic": "الشَّكُورُ",
       "transliteration": "Ash-Shakur",
-      "malay": "Yang Maha Pembalas Budi"
+      "malay": "Yang Maha Bersyukur"
     },
     {
       "id": 36,
@@ -238,13 +238,13 @@
       "id": 40,
       "arabic": "الْحسِيبُ",
       "transliteration": "Al-Hasib",
-      "malay": "Yang Maha Mengira"
+      "malay": "Yang Maha Menghitung/Mengira"
     },
     {
       "id": 41,
       "arabic": "الْجَلِيلُ",
       "transliteration": "Al-Jalil",
-      "malay": "Yang Maha Mulia"
+      "malay": "Yang Maha Mempunyai Kebesaran"
     },
     {
       "id": 42,
@@ -280,7 +280,7 @@
       "id": 47,
       "arabic": "الْوَدُودُ",
       "transliteration": "Al-Wadud",
-      "malay": "Yang Maha Pengasih"
+      "malay": "Yang Maha Pencinta"
     },
     {
       "id": 48,

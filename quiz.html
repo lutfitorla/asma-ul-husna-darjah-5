@@ -85,6 +85,7 @@
             currentRound++;
             userAnswers = {};
             dropZoneAnswerData.clear(); // Clear stored answer data
+            selectedAnswer = null; // Clear selected answer
             currentQuestions = getRandomQuestions();
 
             // Shuffle Arabic names but keep them paired with their translations
@@ -95,10 +96,13 @@
             startStopwatch();
 
             document.getElementById('submitBtn').classList.remove('hidden');
-            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').disabled = true;
             document.getElementById('nextBtn').classList.add('hidden');
             document.getElementById('feedback').classList.remove('show');
             document.getElementById('feedbackBackdrop').classList.remove('show');
+            
+            // Ensure button is disabled on start (will be enabled when all answers are filled)
+            checkIfAllAnswered();
         }
 
         // Render quiz
@@ -140,6 +144,9 @@
                 // Touch events for mobile
                 arabicBtn.addEventListener('touchstart', handleTouchStart);
                 arabicBtn.addEventListener('touchcancel', handleTouchCancel);
+                
+                // Click to select
+                arabicBtn.addEventListener('click', handleAnswerClick);
 
                 arabicContainer.appendChild(arabicBtn);
             });
@@ -241,6 +248,7 @@
         let draggedElement = null;
         let touchElement = null;
         let touchStartPos = {};
+        let selectedAnswer = null; // For click-to-select functionality
         
         // Store references to drop zones and their answer element data
         let dropZoneAnswerData = new Map();
@@ -251,6 +259,11 @@
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', e.target.dataset.questionId);
             e.dataTransfer.setData('arabic', e.target.dataset.arabic);
+            // Clear any selected answer when starting to drag
+            if (selectedAnswer) {
+                selectedAnswer.classList.remove('selected');
+                selectedAnswer = null;
+            }
         }
 
         function handleDragEnd(e) {
@@ -293,6 +306,7 @@
             arabicBtn.addEventListener('dragend', handleDragEnd);
             arabicBtn.addEventListener('touchstart', handleTouchStart);
             arabicBtn.addEventListener('touchcancel', handleTouchCancel);
+            arabicBtn.addEventListener('click', handleAnswerClick);
 
             // Add to grid (append to end)
             arabicContainer.appendChild(arabicBtn);
@@ -355,12 +369,39 @@
             }
         }
 
-        // Handle click on drop zone to undo (mouse click)
+        // Handle click on Arabic button to select it
+        function handleAnswerClick(e) {
+            // Don't handle if dragging or touching
+            if (draggedElement || touchElement) {
+                return;
+            }
+            
+            // Prevent default to avoid conflicts
+            e.stopPropagation();
+            
+            // If clicking the same selected answer, deselect it
+            if (selectedAnswer === e.target) {
+                selectedAnswer.classList.remove('selected');
+                selectedAnswer = null;
+                return;
+            }
+            
+            // Clear previous selection
+            const prevSelected = document.querySelector('.arabic-button.selected');
+            if (prevSelected) {
+                prevSelected.classList.remove('selected');
+            }
+            
+            // Select this answer
+            selectedAnswer = e.target;
+            selectedAnswer.classList.add('selected');
+        }
+
+        // Handle click on drop zone to place selected answer or undo
         function handleDropZoneClick(e) {
             const dropZone = e.target;
             
-            // Only handle if drop zone is filled
-            if (!dropZone.classList.contains('drop-zone') || !dropZone.classList.contains('filled')) {
+            if (!dropZone.classList.contains('drop-zone')) {
                 return;
             }
             
@@ -369,8 +410,46 @@
                 return;
             }
             
-            // For mouse clicks, perform undo immediately
-            performUndo(dropZone);
+            // If there's a selected answer, place it
+            if (selectedAnswer) {
+                placeSelectedAnswer(dropZone);
+                return;
+            }
+            
+            // If drop zone is filled and no selection, undo it
+            if (dropZone.classList.contains('filled')) {
+                performUndo(dropZone);
+            }
+        }
+        
+        // Place selected answer into drop zone
+        function placeSelectedAnswer(dropZone) {
+            if (!selectedAnswer) return;
+            
+            const dropZoneQuestionId = dropZone.dataset.questionId;
+            const selectedQuestionId = selectedAnswer.dataset.questionId;
+            const selectedArabic = selectedAnswer.dataset.arabic;
+            
+            // If drop zone is already filled, return the old answer first
+            if (dropZone.classList.contains('filled')) {
+                returnOldAnswerFromDropZone(dropZone);
+                delete userAnswers[dropZoneQuestionId];
+            }
+            
+            // Place the selected answer
+            dropZone.textContent = selectedAnswer.textContent;
+            dropZone.classList.add('filled');
+            dropZone.dataset.droppedArabic = selectedArabic;
+            userAnswers[dropZoneQuestionId] = selectedQuestionId;
+            
+            // Store the answer data
+            storeAnswerInDropZone(dropZone, selectedAnswer);
+            
+            // Remove the selected answer from grid
+            selectedAnswer.remove();
+            selectedAnswer = null;
+            
+            checkIfAllAnswered();
         }
         
         function performUndo(dropZone) {
@@ -409,6 +488,12 @@
 
             touchElement = e.target;
             touchElement.classList.add('dragging');
+            
+            // Clear any selected answer when starting to touch drag
+            if (selectedAnswer) {
+                selectedAnswer.classList.remove('selected');
+                selectedAnswer = null;
+            }
 
             const touch = e.touches[0];
             touchStartPos = {
@@ -594,14 +679,48 @@
                 dropZones.forEach(zone => {
                     if (zone.dataset.questionId == question.id) {
                         zone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                        // Mark empty drop zones with red border and X
+                        if (!isFilled) {
+                            zone.classList.add('empty');
+                            zone.innerHTML = '<span class="empty-x">✕</span>';
+                        }
                     }
                 });
+            });
+
+            // Lock all interactions after submission
+            // Disable dragging from Arabic buttons
+            const arabicButtons = document.querySelectorAll('.arabic-button');
+            arabicButtons.forEach(btn => {
+                btn.draggable = false;
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'not-allowed';
+                // Prevent any remaining drag events
+                btn.ondragstart = () => false;
+            });
+
+            // Disable all drop zone interactions
+            const allDropZones = document.querySelectorAll('.drop-zone');
+            allDropZones.forEach(zone => {
+                zone.classList.add('locked');
+                zone.style.pointerEvents = 'none';
+                // Prevent any remaining drop events
+                zone.ondragover = () => false;
+                zone.ondrop = () => false;
+                zone.onclick = () => false;
             });
 
             totalScore += correctCount;
             totalAnswered += currentQuestions.length;
 
             updateScore();
+            
+            // Set up close button handler
+            const closeBtn = document.getElementById('feedbackClose');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeFeedback);
+            }
             
             // Show feedback and backdrop
             feedbackDiv.classList.add('show');
