@@ -35,10 +35,12 @@
             <button class="next-btn hidden" id="nextBtn">Soalan Seterusnya</button>
             <button class="home-btn" id="homeBtn">Kembali</button>
         </div>
+    </div>
 
-        <div class="feedback" id="feedback">
-            <!-- Feedback will be shown here -->
-        </div>
+    <!-- Feedback overlay -->
+    <div class="feedback-backdrop" id="feedbackBackdrop"></div>
+    <div class="feedback" id="feedback">
+        <!-- Feedback will be shown here -->
     </div>
 
     <script>
@@ -96,6 +98,7 @@
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('nextBtn').classList.add('hidden');
             document.getElementById('feedback').classList.remove('show');
+            document.getElementById('feedbackBackdrop').classList.remove('show');
         }
 
         // Render quiz
@@ -535,9 +538,21 @@
 
             let correctCount = 0;
             const feedbackDiv = document.getElementById('feedback');
-            feedbackDiv.innerHTML = '<h2>Keputusan</h2>';
+            feedbackDiv.innerHTML = `
+                <div class="feedback-header">
+                    <h2>Keputusan</h2>
+                    <button class="feedback-close" id="feedbackClose" aria-label="Close">×</button>
+                </div>
+                <div class="feedback-content">
+                    <div class="feedback-column"></div>
+                    <div class="feedback-column"></div>
+                </div>
+            `;
+            const feedbackContent = feedbackDiv.querySelector('.feedback-content');
+            const leftColumn = feedbackContent.querySelectorAll('.feedback-column')[0];
+            const rightColumn = feedbackContent.querySelectorAll('.feedback-column')[1];
 
-            currentQuestions.forEach((question) => {
+            currentQuestions.forEach((question, index) => {
                 const userAnswerId = userAnswers[question.id];
                 const isCorrect = userAnswerId && userAnswerId == question.id;
 
@@ -558,7 +573,12 @@
                     </div>
                 `;
 
-                feedbackDiv.appendChild(feedbackItem);
+                // Distribute to columns (first 5 in left, last 5 in right)
+                if (index < 5) {
+                    leftColumn.appendChild(feedbackItem);
+                } else {
+                    rightColumn.appendChild(feedbackItem);
+                }
 
                 // Update drop zone styling
                 const dropZones = document.querySelectorAll('.drop-zone');
@@ -573,7 +593,27 @@
             totalAnswered += currentQuestions.length;
 
             updateScore();
+            
+            // Show feedback and backdrop
             feedbackDiv.classList.add('show');
+            document.getElementById('feedbackBackdrop').classList.add('show');
+            
+            // Adjust positioning if modal is taller than viewport
+            setTimeout(() => {
+                const feedback = document.getElementById('feedback');
+                const viewportHeight = window.innerHeight;
+                const modalHeight = feedback.offsetHeight;
+                
+                if (modalHeight > viewportHeight - 40) {
+                    // Modal is too tall, position at top and allow page scroll
+                    feedback.style.top = '20px';
+                    feedback.style.transform = 'translateX(-50%)';
+                } else {
+                    // Modal fits, center it vertically
+                    feedback.style.top = '50%';
+                    feedback.style.transform = 'translate(-50%, -50%)';
+                }
+            }, 50);
 
             document.getElementById('submitBtn').classList.add('hidden');
             document.getElementById('nextBtn').classList.remove('hidden');
@@ -598,6 +638,53 @@
         document.getElementById('homeBtn').addEventListener('click', () => {
             window.location.href = 'index.html';
         });
+        
+        // Close feedback function
+        function closeFeedback() {
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('feedbackBackdrop').classList.remove('show');
+        }
+        
+        // Close feedback when clicking backdrop (but not when clicking inside the modal)
+        document.getElementById('feedbackBackdrop').addEventListener('click', (e) => {
+            if (e.target.id === 'feedbackBackdrop') {
+                closeFeedback();
+            }
+        });
+        
+        // Prevent clicks inside feedback modal from closing it
+        document.getElementById('feedback').addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Close feedback when clicking close button (set up after feedback is created)
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'feedbackClose' || e.target.classList.contains('feedback-close')) {
+                closeFeedback();
+            }
+        });
+        
+        // Adjust feedback positioning on window resize
+        function adjustFeedbackPosition() {
+            const feedback = document.getElementById('feedback');
+            if (feedback && feedback.classList.contains('show')) {
+                const viewportHeight = window.innerHeight;
+                const modalHeight = feedback.offsetHeight;
+                
+                if (modalHeight > viewportHeight - 40) {
+                    // Modal is too tall, position at top and allow page scroll
+                    feedback.style.top = '20px';
+                    feedback.style.transform = 'translateX(-50%)';
+                } else {
+                    // Modal fits, center it vertically
+                    feedback.style.top = '50%';
+                    feedback.style.transform = 'translate(-50%, -50%)';
+                }
+            }
+        }
+        
+        // Listen for window resize events
+        window.addEventListener('resize', adjustFeedbackPosition);
 
         // Stopwatch functionality
         let stopwatchInterval = null;
