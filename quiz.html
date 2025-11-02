@@ -197,11 +197,11 @@
                 // Click/touch handler for undo functionality
                 dropZone.addEventListener('click', handleDropZoneClick);
                 
-                // Track touch for undo on filled zones
-                let touchStartPosForUndo = null;
+                // Track touch for undo on filled zones and place for empty zones
+                let touchStartPosForDropZone = null;
                 dropZone.addEventListener('touchstart', (e) => {
-                    if (dropZone.classList.contains('filled') && !touchElement && !draggedElement) {
-                        touchStartPosForUndo = {
+                    if (!touchElement || (touchElement && !touchElement.classList.contains('dragging'))) {
+                        touchStartPosForDropZone = {
                             x: e.touches[0].clientX,
                             y: e.touches[0].clientY,
                             time: Date.now()
@@ -210,21 +210,28 @@
                 }, {passive: true});
                 
                 dropZone.addEventListener('touchend', (e) => {
-                    if (dropZone.classList.contains('filled') && 
-                        !touchElement && 
-                        !draggedElement && 
-                        touchStartPosForUndo) {
+                    if (touchStartPosForDropZone && 
+                        (!touchElement || (touchElement && !touchElement.classList.contains('dragging'))) &&
+                        !draggedElement) {
                         const touch = e.changedTouches[0];
-                        const deltaX = Math.abs(touch.clientX - touchStartPosForUndo.x);
-                        const deltaY = Math.abs(touch.clientY - touchStartPosForUndo.y);
-                        const deltaTime = Date.now() - touchStartPosForUndo.time;
+                        const deltaX = Math.abs(touch.clientX - touchStartPosForDropZone.x);
+                        const deltaY = Math.abs(touch.clientY - touchStartPosForDropZone.y);
+                        const deltaTime = Date.now() - touchStartPosForDropZone.time;
                         
-                        // Only undo if it was a tap (minimal movement, quick tap)
+                        // Only handle if it was a tap (minimal movement, quick tap)
                         if (deltaX < 10 && deltaY < 10 && deltaTime < 300) {
                             e.preventDefault();
-                            performUndo(dropZone);
+                            
+                            // If there's a selected answer, place it
+                            if (selectedAnswer) {
+                                placeSelectedAnswer(dropZone);
+                            }
+                            // If drop zone is filled and no selection, undo it
+                            else if (dropZone.classList.contains('filled')) {
+                                performUndo(dropZone);
+                            }
                         }
-                        touchStartPosForUndo = null;
+                        touchStartPosForDropZone = null;
                     }
                 }, {passive: false});
 
@@ -371,16 +378,20 @@
 
         // Handle click on Arabic button to select it
         function handleAnswerClick(e) {
-            // Don't handle if dragging or touching
-            if (draggedElement || touchElement) {
+            const target = e.target || e;
+            
+            // Don't handle if actively dragging (but allow if touchElement exists but not dragging)
+            if (draggedElement || (touchElement && touchElement.classList.contains('dragging'))) {
                 return;
             }
             
             // Prevent default to avoid conflicts
-            e.stopPropagation();
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
             
             // If clicking the same selected answer, deselect it
-            if (selectedAnswer === e.target) {
+            if (selectedAnswer === target) {
                 selectedAnswer.classList.remove('selected');
                 selectedAnswer = null;
                 return;
@@ -393,7 +404,7 @@
             }
             
             // Select this answer
-            selectedAnswer = e.target;
+            selectedAnswer = target;
             selectedAnswer.classList.add('selected');
         }
 
@@ -405,8 +416,8 @@
                 return;
             }
             
-            // Don't trigger if user is trying to drag/drop something
-            if (touchElement || draggedElement) {
+            // Don't trigger if user is actively dragging something
+            if (draggedElement || (touchElement && touchElement.classList.contains('dragging'))) {
                 return;
             }
             
@@ -486,37 +497,47 @@
                 return;
             }
 
+            // Don't start drag immediately - wait to see if user moves finger
+            // This allows tap-to-select to work on mobile
             touchElement = e.target;
-            touchElement.classList.add('dragging');
-            
-            // Clear any selected answer when starting to touch drag
-            if (selectedAnswer) {
-                selectedAnswer.classList.remove('selected');
-                selectedAnswer = null;
-            }
 
             const touch = e.touches[0];
             touchStartPos = {
                 x: touch.clientX,
                 y: touch.clientY,
                 elementX: touchElement.offsetLeft,
-                elementY: touchElement.offsetTop
+                elementY: touchElement.offsetTop,
+                time: Date.now()
             };
-
-            // Make element follow finger
-            touchElement.style.position = 'fixed';
-            touchElement.style.zIndex = '1000';
-            touchElement.style.left = touch.clientX - 50 + 'px';
-            touchElement.style.top = touch.clientY - 25 + 'px';
             
-            e.preventDefault(); // Prevent default touch behavior
+            // Don't prevent default yet - let tap events work
         }
 
         function handleTouchMove(e) {
             if (!touchElement) return;
+            
+            const touch = e.touches[0];
+            const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+            const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+            
+            // Only start dragging if user has moved finger significantly (more than 10px)
+            // This allows tap-to-select for small movements
+            if (deltaX < 10 && deltaY < 10) {
+                return; // Too small movement, treat as tap
+            }
+            
             e.preventDefault();
 
-            const touch = e.touches[0];
+            // Clear any selected answer when starting to drag
+            if (selectedAnswer) {
+                selectedAnswer.classList.remove('selected');
+                selectedAnswer = null;
+            }
+            
+            // Now start the drag behavior
+            touchElement.classList.add('dragging');
+            touchElement.style.position = 'fixed';
+            touchElement.style.zIndex = '1000';
             touchElement.style.left = touch.clientX - 50 + 'px';
             touchElement.style.top = touch.clientY - 25 + 'px';
 
@@ -556,6 +577,27 @@
             if (!touchElement) return;
 
             const touch = e.changedTouches[0];
+            const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+            const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+            const deltaTime = Date.now() - touchStartPos.time;
+            
+            // If it was a tap (minimal movement, quick tap), treat as click for selection
+            if (deltaX < 10 && deltaY < 10 && deltaTime < 300) {
+                // Handle as tap-to-select instead of drag
+                if (!touchElement.classList.contains('dragging')) {
+                    // Trigger click handler for selection
+                    handleAnswerClick({ target: touchElement, stopPropagation: () => {}, preventDefault: () => {} });
+                    touchElement = null;
+                    return;
+                }
+            }
+            
+            // If we were dragging, handle drop
+            if (!touchElement.classList.contains('dragging')) {
+                touchElement = null;
+                return;
+            }
+
             const dropZones = document.querySelectorAll('.drop-zone');
 
             let dropped = false;
