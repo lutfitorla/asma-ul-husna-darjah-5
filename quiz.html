@@ -560,7 +560,10 @@
 
             currentQuestions.forEach((question, index) => {
                 const userAnswerId = userAnswers[question.id];
-                const isCorrect = userAnswerId && userAnswerId == question.id;
+                // Check if drop zone is actually filled before marking as correct
+                const dropZone = document.querySelector(`.drop-zone[data-question-id="${question.id}"]`);
+                const isFilled = dropZone && dropZone.classList.contains('filled');
+                const isCorrect = isFilled && userAnswerId && userAnswerId == question.id;
 
                 if (isCorrect) correctCount++;
 
