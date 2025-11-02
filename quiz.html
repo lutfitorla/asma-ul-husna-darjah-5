@@ -109,7 +109,7 @@
             questions.forEach((question, index) => {
                 const arabicBtn = document.createElement('div');
                 arabicBtn.className = 'arabic-button';
-                arabicBtn.textContent = question.transliteration || question.arabic;
+                arabicBtn.textContent = question.arabic;
                 arabicBtn.draggable = true;
                 arabicBtn.dataset.questionId = question.id;
                 arabicBtn.dataset.arabic = question.arabic;

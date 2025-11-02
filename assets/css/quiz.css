@@ -67,10 +67,8 @@ body::after {
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     padding: 20px;
-    max-height: 60vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
 }
 
 header {
@@ -119,7 +117,6 @@ h1 {
 .quiz-area {
     margin: 5px 0;
     flex: 1;
-    overflow-y: auto;
     position: relative;
     padding-top: 30px;
 }
@@ -145,7 +142,8 @@ h1 {
 }
 
 .arabic-button {
-    padding: 8px 12px;
+    padding: 12px 12px;
+    min-height: 50px;
     border-radius: 8px;
     font-size: 0.9em;
     text-align: center;
@@ -158,6 +156,11 @@ h1 {
         0 2px 4px rgba(0,0,0,0.3),
         inset 0 1px 0 rgba(255,255,255,0.3);
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-wrap: break-word;
+    line-height: 1.4;
 }
 
 .arabic-button.golden {
@@ -365,7 +368,6 @@ button {
 @media (max-width: 768px) {
     .container {
         padding: 15px;
-        max-height: 70vh;
     }
 
     h1 {
@@ -379,7 +381,8 @@ button {
 
     .arabic-button {
         font-size: 0.75em;
-        padding: 6px 8px;
+        padding: 10px 8px;
+        min-height: 45px;
     }
 
     .translations-container {
