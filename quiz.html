@@ -109,11 +109,14 @@
             quizArea.innerHTML = '';
             quizArea.appendChild(stopwatch);
 
+            // Shuffle Arabic buttons (answers) independently from drop zones
+            const shuffledAnswers = shuffle([...questions]);
+
             // Create Arabic name buttons (draggable answers) in 2×5 grid
             const arabicContainer = document.createElement('div');
             arabicContainer.className = 'arabic-names-grid';
 
-            questions.forEach((question, index) => {
+            shuffledAnswers.forEach((question, index) => {
                 const arabicBtn = document.createElement('div');
                 arabicBtn.className = 'arabic-button';
                 arabicBtn.textContent = question.arabic;
@@ -143,6 +146,9 @@
 
             quizArea.appendChild(arabicContainer);
 
+            // Shuffle drop zones (questions) independently from answers
+            const shuffledQuestions = shuffle([...questions]);
+
             // Create translation items (static questions) with drop zones
             const translationsContainer = document.createElement('div');
             translationsContainer.className = 'translations-container';
@@ -153,7 +159,7 @@
             const rightColumn = document.createElement('div');
             rightColumn.className = 'translation-column';
 
-            questions.forEach((question, index) => {
+            shuffledQuestions.forEach((question, index) => {
                 const translationItem = document.createElement('div');
                 translationItem.className = 'translation-item';
 
