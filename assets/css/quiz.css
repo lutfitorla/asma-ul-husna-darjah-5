@@ -1,0 +1,409 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1a1a2e;
+    min-height: 100vh;
+    padding: 10px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Space-themed background with stars */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    z-index: -2;
+    pointer-events: none;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(2px 2px at 20% 30%, white, transparent),
+        radial-gradient(2px 2px at 60% 70%, white, transparent),
+        radial-gradient(1px 1px at 50% 50%, white, transparent),
+        radial-gradient(1px 1px at 80% 10%, white, transparent),
+        radial-gradient(2px 2px at 90% 60%, white, transparent),
+        radial-gradient(1px 1px at 33% 80%, white, transparent),
+        radial-gradient(1px 1px at 10% 40%, white, transparent),
+        radial-gradient(2px 2px at 70% 20%, white, transparent),
+        radial-gradient(1px 1px at 40% 90%, white, transparent);
+    background-size: 200% 200%;
+    background-position: 0% 0%;
+    z-index: -1;
+    pointer-events: none;
+    animation: stars 20s linear infinite;
+}
+
+@keyframes stars {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    padding: 20px;
+    max-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.5);
+    flex-shrink: 0;
+}
+
+h1 {
+    color: white;
+    font-size: 1.5em;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background: rgba(102, 126, 234, 0.2);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.progress-text {
+    font-weight: bold;
+    color: white;
+    font-size: 0.9em;
+}
+
+.score {
+    font-size: 1em;
+    color: white;
+}
+
+.quiz-area {
+    margin: 5px 0;
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    padding-top: 30px;
+}
+
+.stopwatch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    z-index: 10;
+}
+
+/* Arabic names grid - 2 rows × 5 columns */
+.arabic-names-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.arabic-button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    text-align: center;
+    color: white;
+    cursor: move;
+    touch-action: none;
+    user-select: none;
+    transition: all 0.2s;
+    box-shadow: 
+        0 2px 4px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+    font-weight: bold;
+}
+
+.arabic-button.golden {
+    background: linear-gradient(135deg, #ff8c00 0%, #ffa500 50%, #ff8c00 100%);
+    border: 2px solid rgba(255, 200, 100, 0.8);
+}
+
+.arabic-button.silver {
+    background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 50%, #c0c0c0 100%);
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    color: #333;
+}
+
+.arabic-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 4px 8px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.arabic-button.dragging {
+    opacity: 0.5;
+    transform: scale(0.95) rotate(2deg);
+    z-index: 1000;
+}
+
+/* Translations container - 2 columns */
+.translations-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.translation-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.translation-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.translation-text {
+    color: white;
+    font-size: 0.95em;
+    flex: 1;
+}
+
+.drop-zone {
+    background: rgba(30, 30, 60, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    min-width: 80px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85em;
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.drop-zone.drag-over {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.drop-zone.filled {
+    border-style: solid;
+    border-color: rgba(102, 126, 234, 0.8);
+    background: rgba(102, 126, 234, 0.2);
+    color: white;
+}
+
+.drop-zone.correct {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.3);
+}
+
+.drop-zone.incorrect {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.3);
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+    flex-shrink: 0;
+}
+
+button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.next-btn {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    color: white;
+}
+
+.next-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+}
+
+.home-btn {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+}
+
+.home-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 152, 0, 0.4);
+}
+
+.feedback {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+    flex-shrink: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.feedback.show {
+    display: block;
+}
+
+.feedback h2 {
+    margin-bottom: 10px;
+    color: white;
+    font-size: 1.2em;
+}
+
+.feedback-item {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 6px;
+    border-left: 3px solid;
+    font-size: 0.85em;
+}
+
+.feedback-item.correct {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4caf50;
+}
+
+.feedback-item.incorrect {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #f44336;
+}
+
+.feedback-item .arabic {
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    text-align: right;
+    direction: rtl;
+    margin-bottom: 5px;
+}
+
+.feedback-item .answer {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.feedback-item .correct-answer {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+        max-height: 70vh;
+    }
+
+    h1 {
+        font-size: 1.2em;
+    }
+
+    .arabic-names-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+    }
+
+    .arabic-button {
+        font-size: 0.75em;
+        padding: 6px 8px;
+    }
+
+    .translations-container {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .translation-text {
+        font-size: 0.85em;
+    }
+
+    .drop-zone {
+        min-width: 70px;
+        min-height: 35px;
+        font-size: 0.75em;
+        padding: 6px 10px;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}

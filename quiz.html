@@ -4,283 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuiz Asma'ul Husna</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            padding: 30px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        h1 {
-            color: #764ba2;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 10px;
-        }
-
-        .progress-text {
-            font-weight: bold;
-            color: #764ba2;
-        }
-
-        .score {
-            font-size: 1.2em;
-            color: #667eea;
-        }
-
-        .quiz-area {
-            margin: 30px 0;
-        }
-
-        .arabic-names {
-            margin-bottom: 30px;
-        }
-
-        .arabic-item {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            color: white;
-            padding: 15px 20px;
-            margin: 10px 0;
-            border-radius: 10px;
-            font-size: 1.5em;
-            text-align: right;
-            direction: rtl;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .malay-meanings {
-            display: grid;
-            gap: 15px;
-        }
-
-        .meaning-item {
-            background: #f5f7fa;
-            padding: 15px 20px;
-            border-radius: 10px;
-            border: 3px dashed #ccc;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            color: #555;
-            transition: all 0.3s;
-            cursor: move;
-            touch-action: none;
-            user-select: none;
-        }
-
-        .meaning-item.dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
-        }
-
-        .meaning-item.drag-over {
-            border-color: #667eea;
-            background: #e8eaf6;
-            transform: scale(1.02);
-        }
-
-        .drop-zone {
-            background: #fff;
-            border: 3px dashed #ccc;
-            padding: 15px 20px;
-            margin: 10px 0;
-            border-radius: 10px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            color: #999;
-            transition: all 0.3s;
-        }
-
-        .drop-zone.drag-over {
-            border-color: #667eea;
-            background: #e8eaf6;
-            transform: scale(1.02);
-        }
-
-        .drop-zone.filled {
-            border-style: solid;
-            border-color: #667eea;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-        }
-
-        .drop-zone.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-        }
-
-        .drop-zone.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        button {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .next-btn {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-            color: white;
-        }
-
-        .next-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
-        }
-
-        .home-btn {
-            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-            color: white;
-        }
-
-        .home-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.4);
-        }
-
-        .feedback {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .feedback.show {
-            display: block;
-        }
-
-        .feedback h2 {
-            margin-bottom: 15px;
-            color: #764ba2;
-        }
-
-        .feedback-item {
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border-left: 5px solid;
-        }
-
-        .feedback-item.correct {
-            background: #e8f5e9;
-            border-color: #4caf50;
-        }
-
-        .feedback-item.incorrect {
-            background: #ffebee;
-            border-color: #f44336;
-        }
-
-        .feedback-item .arabic {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #764ba2;
-            text-align: right;
-            direction: rtl;
-            margin-bottom: 8px;
-        }
-
-        .feedback-item .answer {
-            color: #555;
-        }
-
-        .feedback-item .correct-answer {
-            color: #4caf50;
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .arabic-item, .meaning-item, .drop-zone {
-                font-size: 1em;
-                padding: 12px 15px;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-
-            button {
-                width: 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/quiz.css">
 </head>
 <body>
     <div class="container">
@@ -299,6 +23,7 @@
         </div>
 
         <div id="quizArea" class="quiz-area">
+            <div class="stopwatch" id="stopwatch">0:00</div>
             <!-- Quiz questions will be loaded here -->
         </div>
 
@@ -356,10 +81,12 @@
             userAnswers = {};
             currentQuestions = getRandomQuestions();
 
-            const shuffledMeanings = shuffle(currentQuestions.map(q => q.malay));
+            // Shuffle Arabic names but keep them paired with their translations
+            const shuffledQuestions = shuffle(currentQuestions);
 
-            renderQuiz(currentQuestions, shuffledMeanings);
+            renderQuiz(shuffledQuestions, []);
             updateProgress();
+            startStopwatch();
 
             document.getElementById('submitBtn').classList.remove('hidden');
             document.getElementById('submitBtn').disabled = false;
@@ -370,22 +97,71 @@
         // Render quiz
         function renderQuiz(questions, meanings) {
             const quizArea = document.getElementById('quizArea');
+            // Keep stopwatch, remove everything else
+            const stopwatch = document.getElementById('stopwatch');
             quizArea.innerHTML = '';
+            quizArea.appendChild(stopwatch);
 
-            // Create drop zones with Arabic names
+            // Create Arabic name buttons (draggable answers) in 2×5 grid
+            const arabicContainer = document.createElement('div');
+            arabicContainer.className = 'arabic-names-grid';
+
             questions.forEach((question, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.style.marginBottom = '20px';
+                const arabicBtn = document.createElement('div');
+                arabicBtn.className = 'arabic-button';
+                arabicBtn.textContent = question.transliteration || question.arabic;
+                arabicBtn.draggable = true;
+                arabicBtn.dataset.questionId = question.id;
+                arabicBtn.dataset.arabic = question.arabic;
+                arabicBtn.dataset.correctMeaning = question.malay;
+                arabicBtn.dataset.index = index;
 
-                const arabicDiv = document.createElement('div');
-                arabicDiv.className = 'arabic-item';
-                arabicDiv.textContent = question.arabic;
+                // Alternate between golden and silver styles
+                if (index < 5) {
+                    arabicBtn.classList.add('golden');
+                } else {
+                    arabicBtn.classList.add('silver');
+                }
 
+                // Drag events
+                arabicBtn.addEventListener('dragstart', handleDragStart);
+                arabicBtn.addEventListener('dragend', handleDragEnd);
+
+                // Touch events for mobile
+                arabicBtn.addEventListener('touchstart', handleTouchStart);
+
+                arabicContainer.appendChild(arabicBtn);
+            });
+
+            quizArea.appendChild(arabicContainer);
+
+            // Create translation items (static questions) with drop zones
+            const translationsContainer = document.createElement('div');
+            translationsContainer.className = 'translations-container';
+
+            // Create two columns
+            const leftColumn = document.createElement('div');
+            leftColumn.className = 'translation-column';
+            const rightColumn = document.createElement('div');
+            rightColumn.className = 'translation-column';
+
+            questions.forEach((question, index) => {
+                const translationItem = document.createElement('div');
+                translationItem.className = 'translation-item';
+
+                // Drop zone on the left
                 const dropZone = document.createElement('div');
                 dropZone.className = 'drop-zone';
                 dropZone.dataset.questionId = question.id;
+                dropZone.dataset.correctArabic = question.arabic;
+                dropZone.dataset.correctMeaning = question.malay;
                 dropZone.dataset.index = index;
-                dropZone.textContent = 'Seret jawapan di sini';
+                dropZone.textContent = ''; // Empty initially
+
+                // Translation text on the right
+                const translationText = document.createElement('div');
+                translationText.className = 'translation-text';
+                translationText.textContent = question.malay;
 
                 // Drop zone events
                 dropZone.addEventListener('dragover', handleDragOver);
@@ -394,35 +170,20 @@
                 dropZone.addEventListener('touchmove', handleTouchMove);
                 dropZone.addEventListener('touchend', handleTouchEnd);
 
-                questionDiv.appendChild(arabicDiv);
-                questionDiv.appendChild(dropZone);
-                quizArea.appendChild(questionDiv);
+                translationItem.appendChild(dropZone);
+                translationItem.appendChild(translationText);
+
+                // Distribute to columns (first 5 in left, last 5 in right)
+                if (index < 5) {
+                    leftColumn.appendChild(translationItem);
+                } else {
+                    rightColumn.appendChild(translationItem);
+                }
             });
 
-            // Create meaning items
-            const meaningsDiv = document.createElement('div');
-            meaningsDiv.className = 'malay-meanings';
-            meaningsDiv.style.marginTop = '30px';
-
-            meanings.forEach((meaning, index) => {
-                const meaningDiv = document.createElement('div');
-                meaningDiv.className = 'meaning-item';
-                meaningDiv.textContent = meaning;
-                meaningDiv.draggable = true;
-                meaningDiv.dataset.meaning = meaning;
-                meaningDiv.dataset.index = index;
-
-                // Drag events
-                meaningDiv.addEventListener('dragstart', handleDragStart);
-                meaningDiv.addEventListener('dragend', handleDragEnd);
-
-                // Touch events for mobile
-                meaningDiv.addEventListener('touchstart', handleTouchStart);
-
-                meaningsDiv.appendChild(meaningDiv);
-            });
-
-            quizArea.appendChild(meaningsDiv);
+            translationsContainer.appendChild(leftColumn);
+            translationsContainer.appendChild(rightColumn);
+            quizArea.appendChild(translationsContainer);
         }
 
         // Drag and drop handlers
@@ -434,7 +195,8 @@
             draggedElement = e.target;
             e.target.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', e.target.dataset.meaning);
+            e.dataTransfer.setData('text/plain', e.target.dataset.questionId);
+            e.dataTransfer.setData('arabic', e.target.dataset.arabic);
         }
 
         function handleDragEnd(e) {
@@ -455,13 +217,18 @@
             e.preventDefault();
             e.target.classList.remove('drag-over');
 
-            const meaning = e.dataTransfer.getData('text/plain');
-            const questionId = e.target.dataset.questionId;
+            const draggedQuestionId = e.dataTransfer.getData('text/plain');
+            const draggedArabic = e.dataTransfer.getData('arabic');
+            const dropZoneQuestionId = e.target.dataset.questionId;
 
             if (e.target.classList.contains('drop-zone')) {
-                e.target.textContent = meaning;
+                // Display the transliteration or Arabic name in the drop zone
+                const draggedBtn = draggedElement;
+                const displayText = draggedBtn.textContent;
+                e.target.textContent = displayText;
                 e.target.classList.add('filled');
-                userAnswers[questionId] = meaning;
+                e.target.dataset.droppedArabic = draggedArabic;
+                userAnswers[dropZoneQuestionId] = draggedQuestionId;
 
                 // Remove the dragged element
                 if (draggedElement) {
@@ -526,13 +293,16 @@
                 if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
                     touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
 
-                    const meaning = touchElement.dataset.meaning;
+                    const draggedQuestionId = touchElement.dataset.questionId;
+                    const draggedArabic = touchElement.dataset.arabic;
+                    const displayText = touchElement.textContent;
                     const questionId = zone.dataset.questionId;
 
-                    zone.textContent = meaning;
+                    zone.textContent = displayText;
                     zone.classList.add('filled');
                     zone.classList.remove('drag-over');
-                    userAnswers[questionId] = meaning;
+                    zone.dataset.droppedArabic = draggedArabic;
+                    userAnswers[questionId] = draggedQuestionId;
 
                     touchElement.remove();
                     dropped = true;
@@ -560,24 +330,34 @@
 
         // Submit answers
         function submitAnswers() {
+            // Stop stopwatch and record time
+            const elapsedTime = stopStopwatch();
+            if (elapsedTime) {
+                updateBestTime(elapsedTime);
+            }
+
             let correctCount = 0;
             const feedbackDiv = document.getElementById('feedback');
             feedbackDiv.innerHTML = '<h2>Keputusan</h2>';
 
             currentQuestions.forEach((question) => {
-                const userAnswer = userAnswers[question.id];
-                const isCorrect = userAnswer === question.malay;
+                const userAnswerId = userAnswers[question.id];
+                const isCorrect = userAnswerId && userAnswerId == question.id;
 
                 if (isCorrect) correctCount++;
 
                 const feedbackItem = document.createElement('div');
                 feedbackItem.className = `feedback-item ${isCorrect ? 'correct' : 'incorrect'}`;
 
+                const userAnswerText = userAnswerId ? 
+                    (document.querySelector(`.arabic-button[data-question-id="${userAnswerId}"]`)?.textContent || 'Tiada jawapan') 
+                    : 'Tiada jawapan';
+
                 feedbackItem.innerHTML = `
                     <div class="arabic">${question.arabic}</div>
                     <div class="answer">
-                        Jawapan anda: ${userAnswer || 'Tiada jawapan'}
-                        ${!isCorrect ? `<br><span class="correct-answer">Jawapan betul: ${question.malay}</span>` : ' ✓'}
+                        Jawapan anda: ${userAnswerText}
+                        ${!isCorrect ? `<br><span class="correct-answer">Jawapan betul: ${question.transliteration || question.arabic}</span>` : ' ✓'}
                     </div>
                 `;
 
@@ -621,6 +401,54 @@
         document.getElementById('homeBtn').addEventListener('click', () => {
             window.location.href = 'index.html';
         });
+
+        // Stopwatch functionality
+        let stopwatchInterval = null;
+        let startTime = null;
+        let elapsedSeconds = 0;
+
+        function startStopwatch() {
+            startTime = Date.now();
+            elapsedSeconds = 0;
+            const stopwatchEl = document.getElementById('stopwatch');
+            if (stopwatchEl) stopwatchEl.textContent = '0:00';
+
+            if (stopwatchInterval) clearInterval(stopwatchInterval);
+
+            stopwatchInterval = setInterval(() => {
+                elapsedSeconds++;
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                const stopwatchEl = document.getElementById('stopwatch');
+                if (stopwatchEl) {
+                    stopwatchEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function stopStopwatch() {
+            if (stopwatchInterval) {
+                clearInterval(stopwatchInterval);
+                stopwatchInterval = null;
+            }
+            return elapsedSeconds;
+        }
+
+        function updateBestTime(currentTime) {
+            const bestTimeKey = 'bestTime';
+            const bestTime = localStorage.getItem(bestTimeKey);
+            const bestTimeNum = bestTime ? parseInt(bestTime) : null;
+
+            if (!bestTimeNum || currentTime < bestTimeNum) {
+                localStorage.setItem(bestTimeKey, currentTime.toString());
+                const minutes = Math.floor(currentTime / 60);
+                const seconds = currentTime % 60;
+                const stopwatchEl = document.getElementById('stopwatch');
+                if (stopwatchEl) {
+                    stopwatchEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} (Best!)`;
+                }
+            }
+        }
 
         // Initialize
         loadNames();
