@@ -1,7 +1,7 @@
 # Project Plan: Asma'ul Husna Learning App for Grade 5 (Darjah 5)
 
 ## Project Overview
-An interactive educational web application to help 10-year-old students learn and test their knowledge of Allah's 99 names (Asma'ul Husna). The app will match Arabic names with their Malay meanings in an engaging, child-friendly format.
+An interactive educational web application to help 10-year-old students learn and test their knowledge of the first 50 names of Allah (Asma'ul Husna), from Ar-Rahman until Asy-Syahid. The app will match Arabic names with their Malay meanings in an engaging, child-friendly format.
 
 ## Target Audience
 - Primary students (Grade 5 / Darjah 5)
@@ -22,7 +22,7 @@ asma-ul-husna-darjah-5/
 │   │   └── quiz.js     # Quiz functionality
 │   └── images/         # Images and graphics (if needed)
 ├── data/
-│   └── names.json      # JSON file containing all 99 names with Arabic and Malay translations
+│   └── names.json      # JSON file containing the first 50 names (until Asy-Syahid) with Arabic and Malay translations
 ├── plan.md             # This file
 ├── README.md           # Project documentation
 └── .gitignore          # Git ignore file
@@ -34,7 +34,7 @@ asma-ul-husna-darjah-5/
 - **Purpose**: Introduction and educational content
 - **Content**:
   - Brief notes/explanation about Asma'ul Husna
-  - Overview of the 99 names
+  - Overview of the first 50 names (until Asy-Syahid)
   - Educational introduction suitable for 10-year-olds
 - **Navigation**:
   - Button/link to navigate to quiz section
@@ -66,7 +66,7 @@ asma-ul-husna-darjah-5/
 ## Data Structure
 
 ### names.json
-JSON file containing all 99 names with:
+JSON file containing the first 50 names (until Asy-Syahid) with:
 - Arabic name (in Arabic script)
 - Transliteration (Romanized Arabic)
 - Malay translation/meaning
@@ -96,7 +96,7 @@ Example structure:
 - [x] Set up basic files
 
 ### Phase 2: Data Preparation
-- [ ] Research and compile all 99 names
+- [ ] Research and compile the first 50 names (until Asy-Syahid)
 - [ ] Create names.json with Arabic, transliteration, and Malay meanings
 - [ ] Verify accuracy of translations
 

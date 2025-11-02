@@ -1,38 +1,629 @@
-<!--
-  QUIZ PAGE STRUCTURE
-  ===================
-  
-  This page will contain the interactive matching quiz.
-  
-  Structure:
-  - Header section with title/instructions
-  - Quiz area containing:
-    - Arabic names display area (e.g., left side or top)
-    - Malay meanings display area (e.g., right side or bottom)
-    - Matching interface (drag-drop or click-select)
-  - Progress indicator (e.g., "Name 5 of 99")
-  - Score/feedback area
-  - Reset or restart button (optional)
-  
-  Files to link:
-  - assets/css/style.css
-  - assets/js/quiz.js
-  - data/names.json (to load the 99 names)
-  
-  Functionality notes:
-  - Load names from names.json
-  - Display Arabic names
-  - Display Malay meanings (possibly scrambled)
-  - Handle matching interactions
-  - Provide feedback (correct/incorrect)
-  - Track progress
-  - Simple scoring system
-  
-  Design considerations:
-  - Large buttons for easy interaction
-  - Clear visual distinction between Arabic and Malay text
-  - Engaging animations for feedback
-  - Color-coded feedback (green for correct, red for incorrect)
-  - Encouraging messages for children
--->
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz Asma'ul Husna</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .score {
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        .quiz-area {
+            margin: 30px 0;
+        }
+
+        .arabic-names {
+            margin-bottom: 30px;
+        }
+
+        .arabic-item {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 1.5em;
+            text-align: right;
+            direction: rtl;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .malay-meanings {
+            display: grid;
+            gap: 15px;
+        }
+
+        .meaning-item {
+            background: #f5f7fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 3px dashed #ccc;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            color: #555;
+            transition: all 0.3s;
+            cursor: move;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .meaning-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .meaning-item.drag-over {
+            border-color: #667eea;
+            background: #e8eaf6;
+            transform: scale(1.02);
+        }
+
+        .drop-zone {
+            background: #fff;
+            border: 3px dashed #ccc;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #667eea;
+            background: #e8eaf6;
+            transform: scale(1.02);
+        }
+
+        .drop-zone.filled {
+            border-style: solid;
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+
+        .drop-zone.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .drop-zone.incorrect {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.4);
+        }
+
+        .feedback {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback h2 {
+            margin-bottom: 15px;
+            color: #764ba2;
+        }
+
+        .feedback-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 5px solid;
+        }
+
+        .feedback-item.correct {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .feedback-item.incorrect {
+            background: #ffebee;
+            border-color: #f44336;
+        }
+
+        .feedback-item .arabic {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #764ba2;
+            text-align: right;
+            direction: rtl;
+            margin-bottom: 8px;
+        }
+
+        .feedback-item .answer {
+            color: #555;
+        }
+
+        .feedback-item .correct-answer {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .arabic-item, .meaning-item, .drop-zone {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kuiz Asma'ul Husna</h1>
+            <p class="subtitle">Padankan Nama Allah dengan Maknanya</p>
+        </header>
+
+        <div class="progress-info">
+            <div class="progress-text">
+                <span id="currentQuestion">Soalan 1-10</span> dari 50
+            </div>
+            <div class="score">
+                Skor: <span id="score">0</span>/<span id="totalAnswered">0</span>
+            </div>
+        </div>
+
+        <div id="quizArea" class="quiz-area">
+            <!-- Quiz questions will be loaded here -->
+        </div>
+
+        <div class="buttons">
+            <button class="submit-btn" id="submitBtn">Semak Jawapan</button>
+            <button class="next-btn hidden" id="nextBtn">Soalan Seterusnya</button>
+            <button class="home-btn" id="homeBtn">Kembali</button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <!-- Feedback will be shown here -->
+        </div>
+    </div>
+
+    <script>
+        let allNames = [];
+        let currentRound = 0;
+        let totalScore = 0;
+        let totalAnswered = 0;
+        let currentQuestions = [];
+        let userAnswers = {};
+
+        // Load names from JSON
+        async function loadNames() {
+            try {
+                const response = await fetch('data/names.json');
+                const data = await response.json();
+                allNames = data.names;
+                startNewRound();
+            } catch (error) {
+                console.error('Error loading names:', error);
+                alert('Error loading quiz data. Please refresh the page.');
+            }
+        }
+
+        // Shuffle array
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Get random questions
+        function getRandomQuestions() {
+            const shuffled = shuffle(allNames);
+            return shuffled.slice(0, 10);
+        }
+
+        // Start new round
+        function startNewRound() {
+            currentRound++;
+            userAnswers = {};
+            currentQuestions = getRandomQuestions();
+
+            const shuffledMeanings = shuffle(currentQuestions.map(q => q.malay));
+
+            renderQuiz(currentQuestions, shuffledMeanings);
+            updateProgress();
+
+            document.getElementById('submitBtn').classList.remove('hidden');
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('feedback').classList.remove('show');
+        }
+
+        // Render quiz
+        function renderQuiz(questions, meanings) {
+            const quizArea = document.getElementById('quizArea');
+            quizArea.innerHTML = '';
+
+            // Create drop zones with Arabic names
+            questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.style.marginBottom = '20px';
+
+                const arabicDiv = document.createElement('div');
+                arabicDiv.className = 'arabic-item';
+                arabicDiv.textContent = question.arabic;
+
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.dataset.questionId = question.id;
+                dropZone.dataset.index = index;
+                dropZone.textContent = 'Seret jawapan di sini';
+
+                // Drop zone events
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+                dropZone.addEventListener('drop', handleDrop);
+                dropZone.addEventListener('touchmove', handleTouchMove);
+                dropZone.addEventListener('touchend', handleTouchEnd);
+
+                questionDiv.appendChild(arabicDiv);
+                questionDiv.appendChild(dropZone);
+                quizArea.appendChild(questionDiv);
+            });
+
+            // Create meaning items
+            const meaningsDiv = document.createElement('div');
+            meaningsDiv.className = 'malay-meanings';
+            meaningsDiv.style.marginTop = '30px';
+
+            meanings.forEach((meaning, index) => {
+                const meaningDiv = document.createElement('div');
+                meaningDiv.className = 'meaning-item';
+                meaningDiv.textContent = meaning;
+                meaningDiv.draggable = true;
+                meaningDiv.dataset.meaning = meaning;
+                meaningDiv.dataset.index = index;
+
+                // Drag events
+                meaningDiv.addEventListener('dragstart', handleDragStart);
+                meaningDiv.addEventListener('dragend', handleDragEnd);
+
+                // Touch events for mobile
+                meaningDiv.addEventListener('touchstart', handleTouchStart);
+
+                meaningsDiv.appendChild(meaningDiv);
+            });
+
+            quizArea.appendChild(meaningsDiv);
+        }
+
+        // Drag and drop handlers
+        let draggedElement = null;
+        let touchElement = null;
+        let touchStartPos = {};
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', e.target.dataset.meaning);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+
+            const meaning = e.dataTransfer.getData('text/plain');
+            const questionId = e.target.dataset.questionId;
+
+            if (e.target.classList.contains('drop-zone')) {
+                e.target.textContent = meaning;
+                e.target.classList.add('filled');
+                userAnswers[questionId] = meaning;
+
+                // Remove the dragged element
+                if (draggedElement) {
+                    draggedElement.remove();
+                    draggedElement = null;
+                }
+
+                checkIfAllAnswered();
+            }
+        }
+
+        // Touch handlers for mobile
+        function handleTouchStart(e) {
+            touchElement = e.target;
+            touchElement.classList.add('dragging');
+
+            const touch = e.touches[0];
+            touchStartPos = {
+                x: touch.clientX,
+                y: touch.clientY,
+                elementX: touchElement.offsetLeft,
+                elementY: touchElement.offsetTop
+            };
+
+            // Make element follow finger
+            touchElement.style.position = 'fixed';
+            touchElement.style.zIndex = '1000';
+            touchElement.style.left = touch.clientX - 50 + 'px';
+            touchElement.style.top = touch.clientY - 25 + 'px';
+        }
+
+        function handleTouchMove(e) {
+            if (!touchElement) return;
+            e.preventDefault();
+
+            const touch = e.touches[0];
+            touchElement.style.left = touch.clientX - 50 + 'px';
+            touchElement.style.top = touch.clientY - 25 + 'px';
+
+            // Highlight drop zone
+            const dropZones = document.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                    touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                    zone.classList.add('drag-over');
+                } else {
+                    zone.classList.remove('drag-over');
+                }
+            });
+        }
+
+        function handleTouchEnd(e) {
+            if (!touchElement) return;
+
+            const touch = e.changedTouches[0];
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            let dropped = false;
+            dropZones.forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                    touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+
+                    const meaning = touchElement.dataset.meaning;
+                    const questionId = zone.dataset.questionId;
+
+                    zone.textContent = meaning;
+                    zone.classList.add('filled');
+                    zone.classList.remove('drag-over');
+                    userAnswers[questionId] = meaning;
+
+                    touchElement.remove();
+                    dropped = true;
+                }
+            });
+
+            if (!dropped && touchElement) {
+                // Reset position
+                touchElement.style.position = '';
+                touchElement.style.zIndex = '';
+                touchElement.style.left = '';
+                touchElement.style.top = '';
+                touchElement.classList.remove('dragging');
+            }
+
+            touchElement = null;
+            checkIfAllAnswered();
+        }
+
+        // Check if all questions are answered
+        function checkIfAllAnswered() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = Object.keys(userAnswers).length !== currentQuestions.length;
+        }
+
+        // Submit answers
+        function submitAnswers() {
+            let correctCount = 0;
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.innerHTML = '<h2>Keputusan</h2>';
+
+            currentQuestions.forEach((question) => {
+                const userAnswer = userAnswers[question.id];
+                const isCorrect = userAnswer === question.malay;
+
+                if (isCorrect) correctCount++;
+
+                const feedbackItem = document.createElement('div');
+                feedbackItem.className = `feedback-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                feedbackItem.innerHTML = `
+                    <div class="arabic">${question.arabic}</div>
+                    <div class="answer">
+                        Jawapan anda: ${userAnswer || 'Tiada jawapan'}
+                        ${!isCorrect ? `<br><span class="correct-answer">Jawapan betul: ${question.malay}</span>` : ' ✓'}
+                    </div>
+                `;
+
+                feedbackDiv.appendChild(feedbackItem);
+
+                // Update drop zone styling
+                const dropZones = document.querySelectorAll('.drop-zone');
+                dropZones.forEach(zone => {
+                    if (zone.dataset.questionId == question.id) {
+                        zone.classList.add(isCorrect ? 'correct' : 'incorrect');
+                    }
+                });
+            });
+
+            totalScore += correctCount;
+            totalAnswered += currentQuestions.length;
+
+            updateScore();
+            feedbackDiv.classList.add('show');
+
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        // Update progress
+        function updateProgress() {
+            const start = (currentRound - 1) * 10 + 1;
+            const end = Math.min(currentRound * 10, totalAnswered + 10);
+            document.getElementById('currentQuestion').textContent = `Soalan ${start}-${end}`;
+        }
+
+        // Update score
+        function updateScore() {
+            document.getElementById('score').textContent = totalScore;
+            document.getElementById('totalAnswered').textContent = totalAnswered;
+        }
+
+        // Event listeners
+        document.getElementById('submitBtn').addEventListener('click', submitAnswers);
+        document.getElementById('nextBtn').addEventListener('click', startNewRound);
+        document.getElementById('homeBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Initialize
+        loadNames();
+    </script>
+</body>
+</html>

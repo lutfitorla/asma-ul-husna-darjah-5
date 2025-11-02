@@ -1,26 +1,180 @@
-<!--
-  INDEX PAGE STRUCTURE
-  ====================
-  
-  This page will serve as the main landing page with educational content about Asma'ul Husna.
-  
-  Structure:
-  - Header section with title
-  - Introduction/educational content section
-    - Brief explanation about Asma'ul Husna
-    - Overview of the 99 names
-    - Information suitable for 10-year-old children
-  - Navigation button to quiz page
-  - Footer (optional)
-  
-  Files to link:
-  - assets/css/style.css
-  - assets/js/main.js
-  
-  Design considerations:
-  - Large, readable fonts
-  - Child-friendly colors
-  - Simple, clear layout
-  - Easy navigation
--->
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asma'ul Husna - 50 Nama Allah</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .quiz-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .names-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .name-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .name-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .name-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .name-arabic {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #764ba2;
+            margin: 10px 0;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .name-transliteration {
+            font-size: 1.1em;
+            color: #555;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .name-malay {
+            font-size: 1em;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .names-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Asma'ul Husna</h1>
+            <p class="subtitle">50 Nama-Nama Allah Yang Indah</p>
+            <a href="quiz.html" class="quiz-button">Mula Kuiz</a>
+        </header>
+
+        <div class="names-grid" id="namesGrid">
+            <!-- Names will be loaded here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Load and display names
+        async function loadNames() {
+            try {
+                const response = await fetch('data/names.json');
+                const data = await response.json();
+                const namesGrid = document.getElementById('namesGrid');
+
+                data.names.forEach(name => {
+                    const card = document.createElement('div');
+                    card.className = 'name-card';
+                    card.innerHTML = `
+                        <div class="name-number">${name.id}</div>
+                        <div class="name-arabic">${name.arabic}</div>
+                        <div class="name-transliteration">${name.transliteration}</div>
+                        <div class="name-malay">${name.malay}</div>
+                    `;
+                    namesGrid.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error loading names:', error);
+                document.getElementById('namesGrid').innerHTML =
+                    '<p style="color: red; text-align: center;">Error loading names. Please check the data file.</p>';
+            }
+        }
+
+        // Load names when page loads
+        loadNames();
+    </script>
+</body>
+</html>

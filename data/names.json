@@ -1,13 +1,304 @@
 {
   "names": [
     {
-      "id": 0,
-      "arabic": "",
-      "transliteration": "",
-      "malay": "",
-      "description": ""
+      "id": 1,
+      "arabic": "الرَّحْمَنُ",
+      "transliteration": "Ar-Rahman",
+      "malay": "Yang Maha Pemurah"
+    },
+    {
+      "id": 2,
+      "arabic": "الرَّحِيمُ",
+      "transliteration": "Ar-Rahim",
+      "malay": "Yang Maha Penyayang"
+    },
+    {
+      "id": 3,
+      "arabic": "الْمَلِكُ",
+      "transliteration": "Al-Malik",
+      "malay": "Yang Maha Merajai"
+    },
+    {
+      "id": 4,
+      "arabic": "الْقُدُّوسُ",
+      "transliteration": "Al-Quddus",
+      "malay": "Yang Maha Suci"
+    },
+    {
+      "id": 5,
+      "arabic": "السَّلاَمُ",
+      "transliteration": "As-Salam",
+      "malay": "Yang Maha Sejahtera"
+    },
+    {
+      "id": 6,
+      "arabic": "الْمُؤْمِنُ",
+      "transliteration": "Al-Mu'min",
+      "malay": "Yang Maha Mengamankan"
+    },
+    {
+      "id": 7,
+      "arabic": "الْمُهَيْمِنُ",
+      "transliteration": "Al-Muhaymin",
+      "malay": "Yang Maha Pengawas"
+    },
+    {
+      "id": 8,
+      "arabic": "الْعَزِيزُ",
+      "transliteration": "Al-Aziz",
+      "malay": "Yang Maha Perkasa"
+    },
+    {
+      "id": 9,
+      "arabic": "الْجَبَّارُ",
+      "transliteration": "Al-Jabbar",
+      "malay": "Yang Maha Memaksa"
+    },
+    {
+      "id": 10,
+      "arabic": "الْمُتَكَبِّرُ",
+      "transliteration": "Al-Mutakabbir",
+      "malay": "Yang Maha Megah"
+    },
+    {
+      "id": 11,
+      "arabic": "الْخَالِقُ",
+      "transliteration": "Al-Khaliq",
+      "malay": "Yang Maha Pencipta"
+    },
+    {
+      "id": 12,
+      "arabic": "الْبَارِئُ",
+      "transliteration": "Al-Bari",
+      "malay": "Yang Maha Membuat"
+    },
+    {
+      "id": 13,
+      "arabic": "الْمُصَوِّرُ",
+      "transliteration": "Al-Musawwir",
+      "malay": "Yang Maha Membentuk Rupa"
+    },
+    {
+      "id": 14,
+      "arabic": "الْغَفَّارُ",
+      "transliteration": "Al-Ghaffar",
+      "malay": "Yang Maha Pengampun"
+    },
+    {
+      "id": 15,
+      "arabic": "الْقَهَّارُ",
+      "transliteration": "Al-Qahhar",
+      "malay": "Yang Maha Menundukkan"
+    },
+    {
+      "id": 16,
+      "arabic": "الْوَهَّابُ",
+      "transliteration": "Al-Wahhab",
+      "malay": "Yang Maha Pemberi"
+    },
+    {
+      "id": 17,
+      "arabic": "الرَّزَّاقُ",
+      "transliteration": "Ar-Razzaq",
+      "malay": "Yang Maha Pemberi Rezeki"
+    },
+    {
+      "id": 18,
+      "arabic": "الْفَتَّاحُ",
+      "transliteration": "Al-Fattah",
+      "malay": "Yang Maha Pembuka"
+    },
+    {
+      "id": 19,
+      "arabic": "اَلْعَلِيْمُ",
+      "transliteration": "Al-Alim",
+      "malay": "Yang Maha Mengetahui"
+    },
+    {
+      "id": 20,
+      "arabic": "الْقَابِضُ",
+      "transliteration": "Al-Qabid",
+      "malay": "Yang Maha Menyempitkan"
+    },
+    {
+      "id": 21,
+      "arabic": "الْبَاسِطُ",
+      "transliteration": "Al-Basit",
+      "malay": "Yang Maha Melapangkan"
+    },
+    {
+      "id": 22,
+      "arabic": "الْخَافِضُ",
+      "transliteration": "Al-Khafid",
+      "malay": "Yang Maha Merendahkan"
+    },
+    {
+      "id": 23,
+      "arabic": "الرَّافِعُ",
+      "transliteration": "Ar-Rafi",
+      "malay": "Yang Maha Meninggikan"
+    },
+    {
+      "id": 24,
+      "arabic": "الْمُعِزُّ",
+      "transliteration": "Al-Mu'izz",
+      "malay": "Yang Maha Memuliakan"
+    },
+    {
+      "id": 25,
+      "arabic": "المُذِلُّ",
+      "transliteration": "Al-Mudhill",
+      "malay": "Yang Maha Menghinakan"
+    },
+    {
+      "id": 26,
+      "arabic": "السَّمِيعُ",
+      "transliteration": "As-Sami",
+      "malay": "Yang Maha Mendengar"
+    },
+    {
+      "id": 27,
+      "arabic": "الْبَصِيرُ",
+      "transliteration": "Al-Basir",
+      "malay": "Yang Maha Melihat"
+    },
+    {
+      "id": 28,
+      "arabic": "الْحَكَمُ",
+      "transliteration": "Al-Hakam",
+      "malay": "Yang Maha Hakim"
+    },
+    {
+      "id": 29,
+      "arabic": "الْعَدْلُ",
+      "transliteration": "Al-Adl",
+      "malay": "Yang Maha Adil"
+    },
+    {
+      "id": 30,
+      "arabic": "اللَّطِيفُ",
+      "transliteration": "Al-Latif",
+      "malay": "Yang Maha Halus"
+    },
+    {
+      "id": 31,
+      "arabic": "الْخَبِيرُ",
+      "transliteration": "Al-Khabir",
+      "malay": "Yang Maha Mengetahui"
+    },
+    {
+      "id": 32,
+      "arabic": "الْحَلِيمُ",
+      "transliteration": "Al-Halim",
+      "malay": "Yang Maha Penyantun"
+    },
+    {
+      "id": 33,
+      "arabic": "الْعَظِيمُ",
+      "transliteration": "Al-Azim",
+      "malay": "Yang Maha Agung"
+    },
+    {
+      "id": 34,
+      "arabic": "الْغَفُورُ",
+      "transliteration": "Al-Ghafur",
+      "malay": "Yang Maha Pengampun"
+    },
+    {
+      "id": 35,
+      "arabic": "الشَّكُورُ",
+      "transliteration": "Ash-Shakur",
+      "malay": "Yang Maha Pembalas Budi"
+    },
+    {
+      "id": 36,
+      "arabic": "الْعَلِيُّ",
+      "transliteration": "Al-Ali",
+      "malay": "Yang Maha Tinggi"
+    },
+    {
+      "id": 37,
+      "arabic": "الْكَبِيرُ",
+      "transliteration": "Al-Kabir",
+      "malay": "Yang Maha Besar"
+    },
+    {
+      "id": 38,
+      "arabic": "الْحَفِيظُ",
+      "transliteration": "Al-Hafiz",
+      "malay": "Yang Maha Memelihara"
+    },
+    {
+      "id": 39,
+      "arabic": "المُقيِت",
+      "transliteration": "Al-Muqit",
+      "malay": "Yang Maha Pemberi Kekuatan"
+    },
+    {
+      "id": 40,
+      "arabic": "الْحسِيبُ",
+      "transliteration": "Al-Hasib",
+      "malay": "Yang Maha Mengira"
+    },
+    {
+      "id": 41,
+      "arabic": "الْجَلِيلُ",
+      "transliteration": "Al-Jalil",
+      "malay": "Yang Maha Mulia"
+    },
+    {
+      "id": 42,
+      "arabic": "الْكَرِيمُ",
+      "transliteration": "Al-Karim",
+      "malay": "Yang Maha Pemurah"
+    },
+    {
+      "id": 43,
+      "arabic": "الرَّقِيبُ",
+      "transliteration": "Ar-Raqib",
+      "malay": "Yang Maha Mengawasi"
+    },
+    {
+      "id": 44,
+      "arabic": "الْمُجِيبُ",
+      "transliteration": "Al-Mujib",
+      "malay": "Yang Maha Memperkenankan"
+    },
+    {
+      "id": 45,
+      "arabic": "الْوَاسِعُ",
+      "transliteration": "Al-Wasi",
+      "malay": "Yang Maha Luas"
+    },
+    {
+      "id": 46,
+      "arabic": "الْحَكِيمُ",
+      "transliteration": "Al-Hakim",
+      "malay": "Yang Maha Bijaksana"
+    },
+    {
+      "id": 47,
+      "arabic": "الْوَدُودُ",
+      "transliteration": "Al-Wadud",
+      "malay": "Yang Maha Pengasih"
+    },
+    {
+      "id": 48,
+      "arabic": "الْمَجِيدُ",
+      "transliteration": "Al-Majid",
+      "malay": "Yang Maha Mulia"
+    },
+    {
+      "id": 49,
+      "arabic": "الْبَاعِثُ",
+      "transliteration": "Al-Ba'ith",
+      "malay": "Yang Maha Membangkitkan"
+    },
+    {
+      "id": 50,
+      "arabic": "الشَّهِيدُ",
+      "transliteration": "Ash-Shahid",
+      "malay": "Yang Maha Menyaksikan"
     }
-  ],
-  "note": "This file will contain all 99 names of Allah (Asma'ul Husna) with Arabic script, transliteration, and Malay meanings. Structure ready for data population."
+  ]
 }
-
